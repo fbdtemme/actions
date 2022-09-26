@@ -4,7 +4,7 @@ description: 'Set dagger environment variables for caching'
 inputs:
   base_cache_path:
     description: 'Base for dagger caching'
-
+    default: "dagger-ci-cache"
 outputs: {}
 runs:
   using: "composite"
