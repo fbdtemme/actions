@@ -1,0 +1,39 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-action.json
+name: 'Set dagger environment variables'
+description: 'Set dagger environment variables for caching'
+inputs:
+  base_cache_path:
+    description: 'Base for dagger caching'
+
+outputs: {}
+runs:
+  using: "composite"
+  steps:
+    - name: Sets env vars on push to main
+      shell: bash
+      run: |
+        echo "DAGGER_CACHE_TO=type=gha,mode=max,scope=${{env.DAGGER_CACHE_BASE}}-main" >> $GITHUB_ENV
+        echo "DAGGER_CACHE_FROM=type=gha,scope=${{env.DAGGER_CACHE_BASE}}-main" >> $GITHUB_ENV
+      if:
+        ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+
+    - name: Sets env vars on push to dev
+      shell: bash
+      run: |
+        echo "DAGGER_CACHE_TO=type=gha,mode=max,scope=${{env.DAGGER_CACHE_BASE}}-dev" >> $GITHUB_ENV
+        echo "DAGGER_CACHE_FROM=type=gha,scope=${{env.DAGGER_CACHE_BASE}}-dev" >> $GITHUB_ENV
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/dev' }}
+
+    - name: Sets env vars on pull request to main
+      shell: bash
+      run: |
+        echo "DAGGER_CACHE_TO=type=gha,mode=max,scope=${{env.DAGGER_CACHE_BASE}}-${{github.event.number}}" >> $GITHUB_ENV
+        echo "DAGGER_CACHE_FROM=type=gha,scope=${{env.DAGGER_CACHE_BASE}}-main type=gha,scope=${{env.DAGGER_CACHE_BASE}}-${{github.event.number}}" >> $GITHUB_ENV
+      if: ${{ github.event_name == 'pull_request' }}
+
+    - name: Sets env vars on pull request to dev
+      shell: bash
+      run: |
+        echo "DAGGER_CACHE_TO=type=gha,mode=max,scope=${{env.DAGGER_CACHE_BASE}}-${{github.event.number}}" >> $GITHUB_ENV
+        echo "DAGGER_CACHE_FROM=type=gha,scope=${{env.DAGGER_CACHE_BASE}}-dev type=gha,scope=${{env.DAGGER_CACHE_BASE}}-${{github.event.number}}" >> $GITHUB_ENV
+      if: ${{ github.event_name == 'pull_request' }}
