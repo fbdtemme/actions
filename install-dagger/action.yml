@@ -6,15 +6,15 @@ outputs: {}
 runs:
   using: "composite"
   steps:
-    - name: Create installation directory
+    - name: Install dagger-cue
       shell: bash
       run: |
         mkdir -p "$HOME/.local"
-
-    - name: Install dagger-cue
-      shell: bash
-      working-directory: "$.local"
-      run: |
+        cd "$HOME/.local"
         curl -L https://dl.dagger.io/dagger-cue/install.sh | sh
         echo "$HOME/.local/bin" >> $GITHUB_PATH
 
+    - name: Initialize project
+      shell: bash
+      run: |
+        dagger-cue project update
