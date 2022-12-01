@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-action.json
+name: 'Install dagger'
+description: 'Install dagger'
+inputs: {}
+outputs: {}
+runs:
+  using: "composite"
+  steps:
+    - name: Create installation directory
+      shell: bash
+      run: |
+        mkdir -p "$HOME/.local"
+
+    - name: Install dagger-cue
+      shell: bash
+      working-directory: "$.local"
+      run: |
+        curl -L https://dl.dagger.io/dagger-cue/install.sh | sh
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
