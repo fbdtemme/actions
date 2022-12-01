@@ -9,10 +9,13 @@ outputs: {}
 runs:
   using: "composite"
   steps:
+    - name: Expose GitHub Runtime
+      uses: crazy-max/ghaction-github-runtime@v2
+
     - name: Sets env vars on push to main
       shell: bash
       run: |
-        echo "ACTIONS_RUNTIME_TOKEN=${{env.GITHUB_TOKEN}}" >> $GITHUB_ENV
+        echo "ACTIONS_CACHE_URL=${{env.ACTIONS_CACHE_URL}} >> $GITHUB_ENV"
         echo "DAGGER_CACHE_TO=type=gha,mode=max,scope=${{env.DAGGER_CACHE_BASE}}-main" >> $GITHUB_ENV
         echo "DAGGER_CACHE_FROM=type=gha,scope=${{env.DAGGER_CACHE_BASE}}-main" >> $GITHUB_ENV
       if:
@@ -21,7 +24,6 @@ runs:
     - name: Sets env vars on push to dev
       shell: bash
       run: |
-        echo "ACTIONS_RUNTIME_TOKEN=${{env.GITHUB_TOKEN}}" >> $GITHUB_ENV
         echo "DAGGER_CACHE_TO=type=gha,mode=max,scope=${{env.DAGGER_CACHE_BASE}}-dev" >> $GITHUB_ENV
         echo "DAGGER_CACHE_FROM=type=gha,scope=${{env.DAGGER_CACHE_BASE}}-dev" >> $GITHUB_ENV
       if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/dev' }}
@@ -29,7 +31,6 @@ runs:
     - name: Sets env vars on pull request to main
       shell: bash
       run: |
-        echo "ACTIONS_RUNTIME_TOKEN=${{env.GITHUB_TOKEN}}" >> $GITHUB_ENV
         echo "DAGGER_CACHE_TO=type=gha,mode=max,scope=${{env.DAGGER_CACHE_BASE}}-${{github.event.number}}" >> $GITHUB_ENV
         echo "DAGGER_CACHE_FROM=type=gha,scope=${{env.DAGGER_CACHE_BASE}}-main type=gha,scope=${{env.DAGGER_CACHE_BASE}}-${{github.event.number}}" >> $GITHUB_ENV
       if: ${{ github.event_name == 'pull_request' }}
@@ -37,7 +38,6 @@ runs:
     - name: Sets env vars on pull request to dev
       shell: bash
       run: |
-        echo "ACTIONS_RUNTIME_TOKEN=${{env.GITHUB_TOKEN}}" >> $GITHUB_ENV
         echo "DAGGER_CACHE_TO=type=gha,mode=max,scope=${{env.DAGGER_CACHE_BASE}}-${{github.event.number}}" >> $GITHUB_ENV
         echo "DAGGER_CACHE_FROM=type=gha,scope=${{env.DAGGER_CACHE_BASE}}-dev type=gha,scope=${{env.DAGGER_CACHE_BASE}}-${{github.event.number}}" >> $GITHUB_ENV
       if: ${{ github.event_name == 'pull_request' }}
