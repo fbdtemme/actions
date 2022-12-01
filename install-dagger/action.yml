@@ -17,4 +17,5 @@ runs:
     - name: Initialize project
       shell: bash
       run: |
+        dagger-cue project init
         dagger-cue project update
